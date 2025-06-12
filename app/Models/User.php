@@ -59,4 +59,8 @@ class User extends Authenticatable
     {
         return $this->membership_expires_at && $this->membership_expires_at->isFuture();
     }
+        public function psychologistProfile()
+    {
+        return $this->hasOne(PsychologistProfile::class);
+    }
 }

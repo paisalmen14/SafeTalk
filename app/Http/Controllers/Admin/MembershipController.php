@@ -14,22 +14,25 @@ class MembershipController extends Controller
         return view('admin.memberships.index', compact('confirmations'));
     }
 
-    public function approve(PaymentConfirmation $confirmation)
+     public function approve(PaymentConfirmation $confirmation)
     {
         $confirmation->status = 'approved';
         $confirmation->save();
-
         $user = $confirmation->user;
-        // Jika sudah jadi member, perpanjang. Jika belum, set baru.
+        $user->chosen_psychologist_id = $confirmation->psychologist_id;
+
         $currentExpiry = $user->membership_expires_at;
         if ($currentExpiry && $currentExpiry->isFuture()) {
             $user->membership_expires_at = $currentExpiry->addMonth();
         } else {
+            
             $user->membership_expires_at = Carbon::now()->addMonth();
         }
+
+    
         $user->save();
 
-        return redirect()->route('admin.memberships.index')->with('success', 'Membership disetujui.');
+        return redirect()->route('admin.memberships.index')->with('success', 'Membership untuk user ' . $user->name . ' telah disetujui.');
     }
 
     public function reject(Request $request, PaymentConfirmation $confirmation)

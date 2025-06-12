@@ -57,102 +57,103 @@
     </div>
 
     <script>
-        function chatBot() {
-            return {
-                userInput: '',
-                loading: false,
-                messageId: 0,
-                initialMessage: { id: 1, role: 'bot', text: 'Halo! Aku SafeTalk, teman curhat virtualmu. Apa yang sedang kamu rasakan saat ini?' },
-                messages: [],
+    function chatBot() {
+        return {
+            userInput: '',
+            loading: false,
+            messageId: 0,
+            chatHistoryKey: `safetalk_chat_history_{{ auth()->id() }}`, // Kunci unik untuk setiap pengguna
+            initialMessage: { id: 1, role: 'bot', text: 'Halo! Aku SafeTalk, teman curhat virtualmu. Apa yang sedang kamu rasakan saat ini?' },
+            messages: [],
 
-                // Fungsi yang dijalankan saat komponen dimuat
-                init() {
-                    const savedHistory = localStorage.getItem('safetalk_chat_history');
-                    this.messages = savedHistory ? JSON.parse(savedHistory) : [this.initialMessage];
-                    this.messageId = this.messages.length > 0 ? Math.max(...this.messages.map(m => m.id)) : 1;
-                    this.scrollToBottom();
-                },
+            // Fungsi yang dijalankan saat komponen dimuat
+            init() {
+                const savedHistory = localStorage.getItem(this.chatHistoryKey);
+                this.messages = savedHistory ? JSON.parse(savedHistory) : [this.initialMessage];
+                this.messageId = this.messages.length > 0 ? Math.max(...this.messages.map(m => m.id)) : 1;
+                this.scrollToBottom();
+            },
 
-                // Fungsi untuk menyimpan history ke localStorage
-                saveHistory() {
-                    localStorage.setItem('safetalk_chat_history', JSON.stringify(this.messages));
-                },
+            // Fungsi untuk menyimpan history ke localStorage
+            saveHistory() {
+                localStorage.setItem(this.chatHistoryKey, JSON.stringify(this.messages));
+            },
 
-                // Fungsi untuk menghapus history
-                confirmClearHistory() {
-                    if (confirm('Apakah Anda yakin ingin menghapus seluruh riwayat percakapan di peramban ini?')) {
-                        // Hapus data dari localStorage
-                        localStorage.removeItem('safetalk_chat_history');
-                        
-                        // Tambahkan baris ini untuk me-refresh halaman
-                        location.reload();
-                    }
-                },
-
-                scrollToBottom() {
-                    this.$nextTick(() => {
-                        this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight;
-                    });
-                },
-
-                sendMessage() {
-                    if (this.userInput.trim() === '') return;
-
-                    this.messageId++;
-                    this.messages.push({ id: this.messageId, role: 'user', text: this.userInput });
-                    this.saveHistory();
-                    this.scrollToBottom();
-
-                    const userMessageToSend = this.userInput;
-                    this.userInput = '';
-                    this.loading = true;
-
-                    // Siapkan history untuk dikirim ke API (tanpa pesan sambutan awal)
-                    const historyForApi = this.messages.slice(1, -1).map(msg => ({
-                        role: msg.role === 'user' ? 'user' : 'model',
-                        text: msg.text
-                    }));
-
-                    fetch('{{ route("chatbot.send") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ 
-                            message: userMessageToSend,
-                            history: historyForApi // Kirim history ke server
-                        })
-                    })
-                    .then(response => {
-                        if (!response.ok) { throw new Error('Network response was not ok'); }
-                        return response.json();
-                    })
-                    .then(data => {
-                        this.loading = false;
-                        if(data.reply) {
-                            this.messageId++;
-                            this.messages.push({ id: this.messageId, role: 'bot', text: data.reply });
-                            this.saveHistory(); // Simpan lagi setelah dapat balasan
-                            this.scrollToBottom();
-                        } else if (data.error) {
-                            this.handleError(data.error);
-                        }
-                    })
-                    .catch(error => {
-                        this.handleError('Maaf, terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
-                        console.error('Error:', error);
-                    });
-                },
-                
-                handleError(errorMessage) {
-                    this.loading = false;
-                    this.messageId++;
-                    this.messages.push({ id: this.messageId, role: 'bot', text: errorMessage });
-                    this.saveHistory();
-                    this.scrollToBottom();
+            // Fungsi untuk menghapus history
+            confirmClearHistory() {
+                if (confirm('Apakah Anda yakin ingin menghapus seluruh riwayat percakapan di peramban ini?')) {
+                    // Hapus data dari localStorage
+                    localStorage.removeItem(this.chatHistoryKey);
+                    
+                    // Me-refresh halaman
+                    location.reload();
                 }
+            },
+
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight;
+                });
+            },
+
+            sendMessage() {
+                if (this.userInput.trim() === '') return;
+
+                this.messageId++;
+                this.messages.push({ id: this.messageId, role: 'user', text: this.userInput });
+                this.saveHistory();
+                this.scrollToBottom();
+
+                const userMessageToSend = this.userInput;
+                this.userInput = '';
+                this.loading = true;
+
+                // Siapkan history untuk dikirim ke API
+                const historyForApi = this.messages.slice(1, -1).map(msg => ({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    text: msg.text
+                }));
+
+                fetch('{{ route("chatbot.send") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ 
+                        message: userMessageToSend,
+                        history: historyForApi
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) { throw new Error('Network response was not ok'); }
+                    return response.json();
+                })
+                .then(data => {
+                    this.loading = false;
+                    if(data.reply) {
+                        this.messageId++;
+                        this.messages.push({ id: this.messageId, role: 'bot', text: data.reply });
+                        this.saveHistory();
+                        this.scrollToBottom();
+                    } else if (data.error) {
+                        this.handleError(data.error);
+                    }
+                })
+                .catch(error => {
+                    this.handleError('Maaf, terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
+                    console.error('Error:', error);
+                });
+            },
+            
+            handleError(errorMessage) {
+                this.loading = false;
+                this.messageId++;
+                this.messages.push({ id: this.messageId, role: 'bot', text: errorMessage });
+                this.saveHistory();
+                this.scrollToBottom();
             }
         }
-    </script>
+    }
+</script>
 </x-app-layout>

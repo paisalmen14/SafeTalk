@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 
 class PsychologistController extends Controller
 {
-    public function index()
-    {
-        $psychologists = User::where('role', 'psikolog')
+   public function index()
+   {
+        $psychologists = User::with('psychologistProfile') // Tambahkan ini
+            ->where('role', 'psikolog')
             ->where('psychologist_status', 'pending')
             ->latest()->paginate(10);
+
         return view('admin.psychologists.index', compact('psychologists'));
     }
 

@@ -11,10 +11,15 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\Admin\PsychologistController as AdminPsychologistController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Auth\PsychologistRegisterController;
 
 Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('/dashboard', [StoryController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+
+Route::get('register/psychologist', [PsychologistRegisterController::class, 'create'])->middleware('guest')->name('psychologist.register');
+Route::post('register/psychologist', [PsychologistRegisterController::class, 'store'])->middleware('guest');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -45,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{psychologist}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{psychologist}', [ChatController::class, 'store'])->name('chat.store');
+
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -57,6 +63,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('psychologists', [AdminPsychologistController::class, 'index'])->name('psychologists.index');
     Route::patch('psychologists/{psychologist}/approve', [AdminPsychologistController::class, 'approve'])->name('psychologists.approve');
     Route::patch('psychologists/{psychologist}/reject', [AdminPsychologistController::class, 'reject'])->name('psychologists.reject');
+
+    
 });
 
 require __DIR__.'/auth.php';

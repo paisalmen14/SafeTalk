@@ -29,6 +29,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -36,7 +37,6 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', Rule::in(['pengguna', 'psikolog'])],
         ]);
 
         $user = User::create([
@@ -44,20 +44,13 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'psychologist_status' => $request->role === 'psikolog' ? 'pending' : null,
+            'role' => 'pengguna', // Otomatis sebagai 'pengguna'
         ]);
 
         event(new Registered($user));
 
-        // PENYESUAIAN LOGIKA SETELAH REGISTRASI
-        if ($user->role === 'psikolog') {
-            // Jika psikolog, jangan login, redirect ke halaman login dengan pesan
-            return redirect()->route('login')->with('status', 'Pendaftaran berhasil! Akun Anda akan segera diverifikasi oleh Admin sebelum dapat digunakan.');
-        }
-        
-        // Jika pengguna biasa, langsung login
         Auth::login($user);
+
         return redirect(RouteServiceProvider::HOME);
     }
 }

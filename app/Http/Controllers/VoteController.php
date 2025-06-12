@@ -19,20 +19,24 @@ class VoteController extends Controller
         $existingVote = $story->votes()->where('user_id', $user->id)->first();
 
         if ($existingVote) {
+            // Jika pengguna membatalkan vote (misal: klik suka lagi saat sudah suka)
             if ($existingVote->vote == $voteValue) {
                 $existingVote->delete();
             } else {
+                // Jika pengguna mengubah vote (misal: dari tidak suka menjadi suka)
                 $existingVote->update(['vote' => $voteValue]);
             }
         } else {
+            // Ini adalah vote baru dari pengguna ini untuk cerita ini.
             $story->votes()->create([
                 'user_id' => $user->id,
                 'vote' => $voteValue,
             ]);
-        }
 
-        if ($voteValue == 1 && $story->user_id !== $user->id) {
-            $story->user->notify(new NewUpvoteNotification($story, $user));
+            // [PERBAIKAN] Kirim notifikasi HANYA jika vote baru ini adalah "suka"
+            if ($voteValue == 1 && $story->user_id !== $user->id) {
+                $story->user->notify(new NewUpvoteNotification($story, $user));
+            }
         }
 
         // Muat ulang jumlah vote yang baru

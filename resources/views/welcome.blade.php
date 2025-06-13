@@ -24,23 +24,73 @@
         </style>
     </head>
     {{-- Latar belakang biru slate gelap yang profesional --}}
-    <body class="antialiased font-sans bg-slate-900"> 
+    <body class="antialiased font-sans bg-slate-900">
         <div class="text-slate-300">
-            @if (Route::has('login'))
-                {{-- Header dengan latar transparan yang menyatu --}}
-                <div class="fixed top-0 right-0 p-6 text-right z-20 w-full bg-slate-900/60 backdrop-blur-sm">
-                    @auth
-                        {{-- Aksen cyan untuk elemen interaktif --}}
-                        <a href="{{ url('/dashboard') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Log in</a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Register</a>
-                        @endif
-                    @endauth
+            {{-- =================================================================== --}}
+            {{-- AWAL BAGIAN YANG DIMODIFIKASI --}}
+            {{-- =================================================================== --}}
+            <nav x-data="{ open: false }" class="bg-slate-900/60 backdrop-blur-sm border-b border-slate-700/50 fixed w-full z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between h-16">
+                        <div class="flex">
+                            <div class="shrink-0 flex items-center">
+                                <a href="{{ url('/') }}">
+                                    <x-application-logo class="block h-12 w-auto fill-current text-slate-200" />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                             @if (Route::has('login'))
+                                <div class="space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                     @auth
+                                        <a href="{{ url('/dashboard') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Dashboard</a>
+                                    @else
+                                        <a href="{{ route('login') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Log in</a>
+
+                                        @if (Route::has('register'))
+                                            <a href="{{ route('register') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Register</a>
+                                        @endif
+                                    @endauth
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="-me-2 flex items-center sm:hidden">
+                            <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:bg-slate-700 focus:text-white transition duration-150 ease-in-out">
+                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                    <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            @endif
+
+                <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+                    <div class="pt-2 pb-3 space-y-1">
+                        @auth
+                            <x-responsive-nav-link :href="route('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-responsive-nav-link>
+                        @else
+                             <x-responsive-nav-link :href="route('login')">
+                                {{ __('Log in') }}
+                            </x-responsive-nav-link>
+                            @if (Route::has('register'))
+                                <x-responsive-nav-link :href="route('register')">
+                                    {{ __('Register') }}
+                                </x-responsive-nav-link>
+                            @endif
+                        @endauth
+                    </div>
+                </div>
+            </nav>
+            {{-- =================================================================== --}}
+            {{-- AKHIR BAGIAN YANG DIMODIFIKASI --}}
+            {{-- =================================================================== --}}
+
 
             <main>
                 <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8" style="background-image: url('https://images.unsplash.com/photo-1626783658527-d7355850e35d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size: cover; background-position: center;">

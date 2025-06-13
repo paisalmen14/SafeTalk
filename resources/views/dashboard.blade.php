@@ -1,90 +1,91 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-slate-200 leading-tight">
             {{ Auth::user()->role === 'admin' ? 'Moderasi Konten' : 'Ruang Cerita' }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Filter & Search Bar --}}
-            <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+            {{-- Filter & Search Bar diubah ke slate-800 --}}
+            <div class="bg-slate-800 p-4 rounded-lg shadow-sm mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="md:col-span-2">
                         <form action="{{ route('dashboard') }}" method="GET">
                             <label for="search" class="sr-only">Cari Cerita</label>
                             <input type="text" name="search" id="search" placeholder="Cari cerita berdasarkan kata kunci..."
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                class="w-full bg-slate-900 border-slate-600 rounded-md shadow-sm focus:border-cyan-500 focus:ring focus:ring-cyan-500 focus:ring-opacity-50"
                                 value="{{ request('search') }}">
                         </form>
                     </div>
+                    {{-- Warna link filter disesuaikan --}}
                     <div class="flex items-center justify-start md:justify-end space-x-4 text-sm font-medium">
-                        <span class="text-gray-500">Urutkan:</span>
+                        <span class="text-slate-400">Urutkan:</span>
                         <a href="{{ route('dashboard', ['filter' => 'newest', 'search' => request('search')]) }}"
-                        class="{{ request('filter', 'newest') == 'newest' ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-blue-600' }}">
+                        class="{{ request('filter', 'newest') == 'newest' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-cyan-400' }}">
                         Terbaru
                         </a>
                         <a href="{{ route('dashboard', ['filter' => 'top', 'search' => request('search')]) }}"
-                        class="{{ request('filter') == 'top' ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-blue-600' }}">
+                        class="{{ request('filter') == 'top' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-cyan-400' }}">
                         Paling Ramai
                         </a>
                         <a href="{{ route('dashboard', ['filter' => 'popular', 'search' => request('search')]) }}"
-                        class="{{ request('filter') == 'popular' ? 'text-blue-600 font-bold' : 'text-gray-600 hover:text-blue-600' }}">
+                        class="{{ request('filter') == 'popular' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-cyan-400' }}">
                         Populer
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            {{-- Card utama diubah ke slate-800 --}}
+            <div class="bg-slate-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-slate-100">
                     
-                    {{-- Tombol "Tulis Cerita Baru" hanya muncul jika BUKAN admin --}}
                     @if(Auth::user()->role !== 'admin')
-                        <a href="{{ route('stories.create') }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+                        <a href="{{ route('stories.create') }}" class="inline-block bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded mb-4">
                             + Tulis Cerita Baru
                         </a>
                     @endif
 
                     @if (session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <div class="bg-green-500/10 border border-green-400 text-green-300 px-4 py-3 rounded relative mb-4" role="alert">
                             <span class="block sm:inline">{{ session('success') }}</span>
                         </div>
                     @endif
                     @if (session('error'))
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <div class="bg-red-500/10 border border-red-400 text-red-300 px-4 py-3 rounded relative mb-4" role="alert">
                             <span class="block sm:inline">{{ session('error') }}</span>
                         </div>
                     @endif
 
                     <div class="space-y-6">
                         @forelse ($stories as $story)
-                            <div class="p-6 bg-white border rounded-lg shadow-sm">
+                            {{-- Card per cerita diubah ke slate-800 dengan border slate-700 --}}
+                            <div class="p-6 bg-slate-800 border border-slate-700 rounded-lg shadow-sm">
                                 
                                 <div class="flex justify-between items-start">
                                     <div class="font-medium">
                                         @if ($story->is_anonymous)
-                                            <span class="text-gray-600 font-bold">Anonim</span>
+                                            <span class="text-slate-300 font-bold">Anonim</span>
                                         @else
-                                            <a href="{{ route('profile.show', $story->user) }}" class="text-gray-900 font-bold hover:underline">
+                                            <a href="{{ route('profile.show', $story->user) }}" class="text-slate-100 font-bold hover:underline">
                                                 {{ $story->user->name }}
                                             </a>
-                                            <span class="text-gray-500 font-normal text-sm block">{{'@'}}{{ $story->user->username }}</span>
+                                            <span class="text-slate-400 font-normal text-sm block">{{'@'}}{{ $story->user->username }}</span>
                                         @endif
                                     </div>
-                                    <div class="text-xs text-gray-500 flex-shrink-0">
+                                    <div class="text-xs text-slate-400 flex-shrink-0">
                                         {{ $story->created_at->diffForHumans() }}
                                     </div>
                                 </div>
 
-                                <p class="mt-4 text-gray-800 whitespace-pre-wrap">{{ $story->content }}</p>
+                                <p class="mt-4 text-slate-300 whitespace-pre-wrap">{{ $story->content }}</p>
 
-                                {{-- BAGIAN AKSI (VOTE, EDIT, HAPUS, KOMENTAR) --}}
-                                <div class="mt-4 flex items-center justify-between border-t pt-4">
+                                {{-- Aksi dengan warna yang disesuaikan --}}
+                                <div class="mt-4 flex items-center justify-between border-t border-slate-700 pt-4">
                                     
-                                    {{-- Fitur vote hanya muncul jika BUKAN admin --}}
                                     @if(Auth::user()->role !== 'admin')
-                                        <div class="flex items-center space-x-4 text-gray-500"
+                                        <div class="flex items-center space-x-4 text-slate-400"
                                             x-data="{
                                                 userVote: {{ $story->userVote() ?? 0 }},
                                                 upvotes: {{ $story->upvotes_count ?? 0 }},
@@ -109,38 +110,36 @@
                                             }">
                                             
                                             <div class="flex items-center space-x-1.5">
-                                                <button @click="vote('up')" class="p-1.5 rounded-full hover:bg-blue-50" :class="{ 'text-blue-600 bg-blue-50': userVote === 1, 'text-gray-500 hover:text-blue-600': userVote !== 1 }">
-                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="userVote === 1 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 14-6 6-6-6a5 5 0 0 1 0-7 5 5 0 0 1 7 0 5 5 0 0 1 7 0 5 5 0 0 1 0 7z"/></svg>
+                                                <button @click="vote('up')" class="p-1.5 rounded-full hover:bg-cyan-500/10" :class="{ 'text-cyan-400 bg-cyan-500/10': userVote === 1, 'text-slate-400 hover:text-cyan-400': userVote !== 1 }">
+                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="userVote === 1 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
                                                 </button>
                                                 <span class="text-sm font-semibold" x-text="upvotes"></span>
                                             </div>
 
                                             <div class="flex items-center space-x-1.5">
-                                                <button @click="vote('down')" class="p-1.5 rounded-full hover:bg-orange-50" :class="{ 'text-orange-600 bg-orange-50': userVote === -1, 'text-gray-500 hover:text-orange-600': userVote !== -1 }">
-                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="userVote === -1 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5"/><path d="m12 13-1-1 2-2-3-3 2-2"/></svg>
+                                                <button @click="vote('down')" class="p-1.5 rounded-full hover:bg-orange-500/10" :class="{ 'text-orange-400 bg-orange-500/10': userVote === -1, 'text-slate-400 hover:text-orange-400': userVote !== -1 }">
+                                                   <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :fill="userVote === -1 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
                                                 </button>
                                                 <span class="text-sm font-semibold" x-text="downvotes"></span>
                                             </div>
                                         </div>
                                     @else
-                                        {{-- Beri placeholder kosong agar layout tidak berantakan --}}
                                         <div>&nbsp;</div>
                                     @endif
 
-                                    {{-- SISI KANAN: AKSI LAINNYA --}}
                                     <div class="flex items-center space-x-4">
                                         @can('update-story', $story)
-                                            <a href="{{ route('stories.edit', $story) }}" class="text-sm font-medium text-yellow-600 hover:text-yellow-800">Edit</a>
+                                            <a href="{{ route('stories.edit', $story) }}" class="text-sm font-medium text-yellow-500 hover:text-yellow-400">Edit</a>
                                         @endcan
                                         @can('delete-story', $story)
                                             <form action="{{ route('stories.destroy', $story) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus cerita ini?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-800">Hapus</button>
+                                                <button type="submit" class="text-sm font-medium text-red-500 hover:text-red-400">Hapus</button>
                                             </form>
                                         @endcan
                                         
-                                        <a href="{{ route('stories.show', $story) }}" class="flex items-center space-x-2 text-gray-500 hover:text-blue-600">
+                                        <a href="{{ route('stories.show', $story) }}" class="flex items-center space-x-2 text-slate-400 hover:text-cyan-400">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                             <span>{{ $story->comments_count }} Komentar</span>
                                         </a>
@@ -148,7 +147,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                            <div class="bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-sm text-center">
                                 <p>Tidak ada cerita yang cocok dengan kriteria Anda.</p>
                             </div>
                         @endforelse

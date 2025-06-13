@@ -13,7 +13,21 @@ use App\Http\Controllers\Admin\PsychologistController as AdminPsychologistContro
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Auth\PsychologistRegisterController;
 
-Route::get('/', fn() => redirect()->route('login'));
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+// Rute ini diubah untuk menampilkan welcome page
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::get('/dashboard', [StoryController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -47,9 +61,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/membership', [MembershipController::class, 'index'])->name('membership.index');
     Route::post('/membership', [MembershipController::class, 'store'])->name('membership.store');
     
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/chat/{psychologist}', [ChatController::class, 'show'])->name('chat.show');
-    Route::post('/chat/{psychologist}', [ChatController::class, 'store'])->name('chat.store');
+    Route::middleware('member')->group(function () {
+        Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/chat/{psychologist}', [ChatController::class, 'show'])->name('chat.show');
+        Route::post('/chat/{psychologist}', [ChatController::class, 'store'])->name('chat.store');
+    });
 
 });
 

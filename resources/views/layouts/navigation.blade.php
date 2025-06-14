@@ -1,10 +1,10 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class="bg-slate-800 border-b border-slate-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        <x-application-logo class="block h-12 w-auto fill-current text-slate-200" />
                     </a>
                 </div>
 
@@ -19,16 +19,20 @@
                         {{ __('Konsultasi AI') }}
                     </x-nav-link>
 
-                    {{-- Link untuk Member atau Psikolog --}}
-                    @if( (Auth::user()->role === 'pengguna' && Auth::user()->isMember()) || (Auth::user()->role === 'psikolog' && Auth::user()->psychologist_status === 'approved') )
+                    @if(Auth::user()->role === 'psikolog')
                         <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
-                            {{ __('Chat Psikolog') }}
+                            {{ __('Ruang Chat') }}
                         </x-nav-link>
-                    {{-- Link untuk Pengguna biasa (Non-Member) --}}
-                    @elseif(Auth::user()->role === 'pengguna' && !Auth::user()->isMember())
-                        <x-nav-link :href="route('membership.index')" :active="request()->routeIs('membership.index')">
-                            <span class="text-yellow-500 font-bold">{{ __('Upgrade Membership') }}</span>
-                        </x-nav-link>
+                    @elseif(Auth::user()->role === 'pengguna')
+                        @if($hasActiveConsultation)
+                            <x-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
+                                <span class="text-green-400 font-bold">{{ __('Ruang Chat') }}</span>
+                            </x-nav-link>
+                        @else
+                            <x-nav-link :href="route('consultations.index')" :active="request()->routeIs('consultations.*')">
+                                <span class="text-cyan-400 font-bold">{{ __('Konsultasi Profesional') }}</span>
+                            </x-nav-link>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -37,7 +41,7 @@
                 <x-notification-dropdown />
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-slate-400 bg-slate-800 hover:text-slate-300 focus:outline-none transition ease-in-out duration-150">
                             <div>{{ Auth::user()->name }}</div>
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -48,24 +52,47 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        {{-- Menu Admin --}}
                         @if(Auth::user()->role === 'admin')
-                            <div class="block px-4 py-2 text-xs text-gray-400">
+                            <div class="block px-4 py-2 text-xs text-slate-400">
                                 {{ __('Menu Admin') }}
                             </div>
+                            <x-dropdown-link :href="route('admin.users.index')">
+                                {{ __('Kelola Pengguna') }}
+                            </x-dropdown-link>
                             <x-dropdown-link :href="route('admin.articles.index')">
                                 {{ __('Manajemen Artikel') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('admin.memberships.index')">
-                                {{ __('Konfirmasi Member') }}
+                            <x-dropdown-link :href="route('admin.consultation.verifications.index')">
+                                {{ __('Verifikasi Konsultasi') }}
                             </x-dropdown-link>
                             <x-dropdown-link :href="route('admin.psychologists.index')">
                                 {{ __('Verifikasi Psikolog') }}
                             </x-dropdown-link>
-                            <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                            <div class="border-t border-slate-600"></div>
                         @endif
 
-                        {{-- Menu Pengguna --}}
+                        @if(Auth::user()->role === 'psikolog')
+                            <div class="block px-4 py-2 text-xs text-slate-400">
+                                {{ __('Menu Psikolog') }}
+                            </div>
+                            <x-dropdown-link :href="route('psychologist.price.edit')">
+                                {{ __('Pengaturan Harga') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('psychologist.profile_picture.edit')">
+                                {{ __('Ganti Foto Profil') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('psychologist.availability.index')">
+                                {{ __('Kelola Jadwal') }}
+                            </x-dropdown-link>
+                             <div class="border-t border-slate-600"></div>
+                        @endif
+
+                        @if(Auth::user()->role !== 'admin')
+                            <x-dropdown-link :href="route('consultations.history')">
+                                {{ __('Riwayat Konsultasi') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <x-dropdown-link :href="route('profile.show', auth()->user())">
                             {{ __('Profil Saya') }}
                         </x-dropdown-link>
@@ -85,7 +112,7 @@
             </div>
 
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-300 hover:bg-slate-700 focus:outline-none focus:bg-slate-700 focus:text-slate-300 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -103,46 +130,75 @@
             <x-responsive-nav-link :href="route('articles.index')" :active="request()->routeIs('articles.index') || request()->routeIs('articles.show')">
                 {{ __('Artikel') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('chatbot.index')" :active="request()->routeIs('chatbot.index')">
+             <x-responsive-nav-link :href="route('chatbot.index')" :active="request()->routeIs('chatbot.index')">
                 {{ __('Konsultasi AI') }}
             </x-responsive-nav-link>
             
-            @if( (Auth::user()->role === 'pengguna' && Auth::user()->isMember()) || (Auth::user()->role === 'psikolog' && Auth::user()->psychologist_status === 'approved') )
-                <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
-                    {{ __('Chat Psikolog') }}
+            @if(Auth::user()->role === 'psikolog')
+                 <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
+                    {{ __('Ruang Chat') }}
                 </x-responsive-nav-link>
-            @elseif(Auth::user()->role === 'pengguna' && !Auth::user()->isMember())
-                <x-responsive-nav-link :href="route('membership.index')" :active="request()->routeIs('membership.index')">
-                     <span class="text-yellow-500 font-bold">{{ __('Upgrade Membership') }}</span>
-                </x-responsive-nav-link>
+            @elseif(Auth::user()->role === 'pengguna')
+                @if($hasActiveConsultation)
+                    <x-responsive-nav-link :href="route('chat.index')" :active="request()->routeIs('chat.*')">
+                        <span class="text-green-400 font-bold">{{ __('Ruang Chat') }}</span>
+                    </x-responsive-nav-link>
+                @else
+                    <x-responsive-nav-link :href="route('consultations.index')" :active="request()->routeIs('consultations.*')">
+                        <span class="text-cyan-400 font-bold">{{ __('Konsultasi Profesional') }}</span>
+                    </x-responsive-nav-link>
+                @endif
             @endif
         </div>
 
-        <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
+        <div class="pt-4 pb-1 border-t border-slate-600">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                <div class="font-medium text-base text-slate-200">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-sm text-slate-500">{{ Auth::user()->email }}</div>
             </div>
 
             <div class="mt-3 space-y-1">
-                 {{-- Menu Admin untuk Mobile --}}
                 @if(Auth::user()->role === 'admin')
-                    <div class="block px-4 py-2 text-xs text-gray-400">
+                    <div class="block px-4 py-2 text-xs text-slate-400">
                         {{ __('Menu Admin') }}
                     </div>
+                    <x-responsive-nav-link :href="route('admin.users.index')">
+                        {{ __('Kelola Pengguna') }}
+                    </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.articles.index')">
                         {{ __('Manajemen Artikel') }}
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('admin.memberships.index')">
-                        {{ __('Konfirmasi Member') }}
+                    <x-responsive-nav-link :href="route('admin.consultation.verifications.index')">
+                        {{ __('Verifikasi Konsultasi') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.psychologists.index')">
                         {{ __('Verifikasi Psikolog') }}
                     </x-responsive-nav-link>
-                     <div class="border-t border-gray-200 dark:border-gray-600 my-1"></div>
+                     <div class="border-t border-slate-600 my-1"></div>
                 @endif
                 
-                {{-- Menu Pengguna untuk Mobile --}}
+                @if(Auth::user()->role === 'psikolog')
+                    <div class="block px-4 py-2 text-xs text-slate-400">
+                        {{ __('Menu Psikolog') }}
+                    </div>
+                    <x-responsive-nav-link :href="route('psychologist.price.edit')">
+                        {{ __('Pengaturan Harga') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('psychologist.profile_picture.edit')">
+                        {{ __('Ganti Foto Profil') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('psychologist.availability.index')">
+                        {{ __('Kelola Jadwal') }}
+                    </x-responsive-nav-link>
+                     <div class="border-t border-slate-600 my-1"></div>
+                @endif
+                
+                @if(Auth::user()->role !== 'admin')
+                    <x-responsive-nav-link :href="route('consultations.history')">
+                        {{ __('Riwayat Konsultasi') }}
+                    </x-responsive-nav-link>
+                @endif
+                
                 <x-responsive-nav-link :href="route('profile.show', auth()->user())">
                     {{ __('Profil Saya') }}
                 </x-responsive-nav-link>
@@ -153,11 +209,12 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();">
+                            onclick="event.preventDefault();
+                                        this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
             </div>
         </div>
-    </div>
+    </div>
 </nav>

@@ -2,7 +2,7 @@
     <x-slot name="header">
         {{-- Mengubah header agar tombol Hapus History bisa masuk --}}
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-slate-200 leading-tight">
                 {{ __('Ruang Konsultasi AI - SafeTalk') }}
             </h2>
             {{-- Tombol untuk menghapus history --}}

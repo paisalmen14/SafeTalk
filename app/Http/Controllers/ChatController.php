@@ -4,104 +4,99 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Chat;
+use App\Models\Consultation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ChatController extends Controller
 {
     /**
-     * Menampilkan daftar kontak (psikolog untuk pengguna, atau pengguna untuk psikolog).
+     * Menampilkan daftar sesi konsultasi yang bisa di-chat.
      */
     public function index()
     {
         $user = Auth::user();
-        $contacts = collect();
+        $consultations = collect();
 
-        if ($user->role === 'pengguna' && $user->isMember()) {
-            // Jika pengguna adalah member, tampilkan hanya psikolog yang telah dipilih.
-            if ($user->chosen_psychologist_id) {
-                $contacts = User::where('id', $user->chosen_psychologist_id)->get();
-            }
-        } elseif ($user->role === 'psikolog' && $user->psychologist_status === 'approved') {
-            // Jika psikolog, tampilkan semua pengguna member yang telah memilihnya.
-            $contacts = User::where('role', 'pengguna')
-                            ->where('membership_expires_at', '>', now())
-                            ->where('chosen_psychologist_id', $user->id)
-                            ->latest()
-                            ->get();
-        }
-
-        return view('chat.index', compact('contacts'));
-    }
-
-    /**
-     * Menampilkan halaman chat dengan kontak tertentu.
-     */
-    public function show(User $psychologist)
-    {
-        $user = Auth::user();
-
-        // Aturan Otorisasi untuk memulai chat
         if ($user->role === 'pengguna') {
-            // Pengguna hanya bisa chat dengan psikolog yang dipilihnya.
-            if ($user->chosen_psychologist_id !== $psychologist->id) {
-                abort(403, 'Anda hanya dapat memulai chat dengan psikolog yang telah Anda pilih.');
-            }
-            // Pastikan target adalah psikolog yang valid.
-            if ($psychologist->role !== 'psikolog' || $psychologist->psychologist_status !== 'approved') {
-                abort(403, 'Anda hanya dapat memulai chat dengan psikolog terverifikasi.');
-            }
+            // Ambil semua konsultasi user yang sudah dikonfirmasi
+            $consultations = $user->consultationsAsUser()
+                                  ->where('status', 'confirmed')
+                                  ->with('psychologist') // Eager load data psikolog
+                                  ->latest('requested_start_time')
+                                  ->get();
+        } elseif ($user->role === 'psikolog') {
+            // Ambil sesi yang relevan (aktif dan sudah selesai)
+            $consultations = Consultation::where('psychologist_id', $user->id)
+                                        ->whereIn('status', ['confirmed', 'completed']) // <-- PERUBAHAN DI SINI
+                                        ->with('user') 
+                                        ->latest('requested_start_time')
+                                        ->get();
         }
-        
-        // Psikolog hanya bisa chat dengan pengguna yang berstatus member.
-        if ($user->role === 'psikolog' && !$psychologist->isMember()) {
-            abort(403, 'Anda hanya dapat berinteraksi dengan pengguna yang berstatus member.');
-        }
-
-        // Mengambil riwayat pesan antara dua pengguna.
-        $messages = Chat::where(function ($q) use ($user, $psychologist) {
-            $q->where('sender_id', $user->id)->where('receiver_id', $psychologist->id);
-        })->orWhere(function ($q) use ($user, $psychologist) {
-            $q->where('sender_id', $psychologist->id)->where('receiver_id', $user->id);
-        })->orderBy('created_at', 'asc')->get();
-
-        // Tandai pesan yang diterima sebagai sudah dibaca.
-        Chat::where('sender_id', $psychologist->id)
-            ->where('receiver_id', $user->id)
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
-
-        return view('chat.show', ['contact' => $psychologist, 'messages' => $messages]);
+        // Tampilkan view yang sama (chat.index), tapi sekarang datanya adalah daftar konsultasi
+        return view('chat.index', compact('consultations'));
     }
 
     /**
-     * Menyimpan pesan baru.
+     * Menampilkan halaman chat untuk sebuah sesi konsultasi.
      */
-    public function store(Request $request, User $psychologist)
+    public function show(Consultation $consultation)
+    {
+        $isArchived = false; // Default, chat tidak diarsipkan (aktif)
+
+    // Coba akses sebagai chat aktif terlebih dahulu
+    if (Gate::allows('access-consultation-chat', $consultation)) {
+        // Akses diizinkan, biarkan $isArchived = false
+    } 
+    // Jika gagal, coba akses sebagai riwayat/arsip
+    elseif (Gate::allows('view-chat-history', $consultation)) {
+        $isArchived = true; // Set sebagai arsip (read-only)
+    } 
+    // Jika keduanya gagal, tolak akses
+    else {
+        return redirect()->route('consultations.history')
+            ->with('error', 'Anda tidak memiliki akses ke sesi konsultasi ini.');
+    }
+        
+        // Tentukan siapa lawan bicara
+        $user = auth()->user();
+        $contact = ($user->id === $consultation->user_id) ? $consultation->psychologist : $consultation->user;
+
+        // Ambil riwayat pesan untuk sesi ini
+        $messages = $consultation->chats()->orderBy('created_at', 'asc')->get();
+
+        // Tandai pesan dari lawan bicara sebagai sudah dibaca
+        $consultation->chats()
+                     ->where('sender_id', $contact->id)
+                     ->where('receiver_id', $user->id)
+                     ->whereNull('read_at')
+                     ->update(['read_at' => now()]);
+
+         return view('chat.show', compact('consultation', 'contact', 'messages', 'isArchived'));
+    }
+
+    /**
+     * Menyimpan pesan baru dalam sebuah sesi konsultasi.
+     */
+    public function store(Request $request, Consultation $consultation)
     {
         $request->validate(['message' => 'required|string|max:2000']);
-        
-        $user = Auth::user();
-        
-        // Aturan Otorisasi untuk mengirim pesan
-        if ($user->role === 'pengguna') {
-            if ($user->chosen_psychologist_id !== $psychologist->id) {
-                return back()->with('error', 'Tidak dapat mengirim pesan ke psikolog ini.');
-            }
+
+        if (Gate::denies('access-consultation-chat', $consultation)) {
+            return back()->with('error', 'Tidak dapat mengirim pesan. Sesi belum dimulai atau sudah berakhir.');
         }
 
-        if (($user->role === 'pengguna' && ($psychologist->role !== 'psikolog' || $psychologist->psychologist_status !== 'approved')) ||
-            ($user->role === 'psikolog' && !$psychologist->isMember())) {
-            return back()->with('error', 'Tidak dapat mengirim pesan ke pengguna ini.');
-        }
+        // Tentukan penerima pesan secara otomatis dari objek konsultasi
+        $user = auth()->user();
+        $receiverId = ($user->id === $consultation->user_id) ? $consultation->psychologist_id : $consultation->user_id;
 
-        // Buat pesan baru
-        Chat::create([
+        $consultation->chats()->create([
             'sender_id' => $user->id,
-            'receiver_id' => $psychologist->id,
+            'receiver_id' => $receiverId, 
             'message' => $request->message,
         ]);
 
-        return redirect()->route('chat.show', $psychologist);
+        return back();
     }
 }

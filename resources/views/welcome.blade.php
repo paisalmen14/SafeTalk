@@ -26,10 +26,6 @@
     {{-- Latar belakang biru slate gelap yang profesional --}}
     <body class="antialiased font-sans bg-slate-900">
         <div class="text-slate-300">
-
-            {{-- =================================================================== --}}
-            {{-- AWAL BAGIAN YANG DIMODIFIKASI --}}
-            {{-- =================================================================== --}}
             <nav x-data="{ open: false }" class="bg-slate-900/60 backdrop-blur-sm border-b border-slate-700/50 fixed w-full z-20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -87,9 +83,6 @@
                     </div>
                 </div>
             </nav>
-            {{-- =================================================================== --}}
-            {{-- AKHIR BAGIAN YANG DIMODIFIKASI --}}
-            {{-- =================================================================== --}}
 
 
             <main>

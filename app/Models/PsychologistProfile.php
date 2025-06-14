@@ -11,6 +11,8 @@ class PsychologistProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'profile_image_path',
+        'price_per_hour',     
         'ktp_number', 
         'university',
         'graduation_year',

@@ -1,10 +1,14 @@
 @props(['active'])
 
 @php
-// Warna border aktif diubah dari indigo ke cyan
-$classes = ($active ?? false)
-            ? 'inline-flex items-center px-1 pt-1 border-b-2 border-cyan-400 text-sm font-medium leading-5 text-gray-100 focus:outline-none focus:border-cyan-700 transition duration-150 ease-in-out'
-            : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-slate-400 hover:text-slate-300 hover:border-slate-700 focus:outline-none focus:text-slate-300 focus:border-slate-700 transition duration-150 ease-in-out';
+// Logika untuk class CSS pada link navigasi
+$baseClasses = 'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none';
+
+$activeClasses = 'border-pink-500 text-gray-900 focus:border-pink-700'; // Style untuk link AKTIF
+
+$inactiveClasses = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:text-gray-700 focus:border-gray-300'; // Style untuk link TIDAK AKTIF
+
+$classes = $active ? ($baseClasses . ' ' . $activeClasses) : ($baseClasses . ' ' . $inactiveClasses);
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }}>

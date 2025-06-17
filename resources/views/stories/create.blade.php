@@ -1,39 +1,48 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{-- Menggunakan font serif untuk judul agar konsisten --}}
+        <h2 class="font-serif text-3xl font-bold text-gray-900">
             {{ __('Tulis Cerita Baru') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <form action="{{ route('stories.store') }}" method="POST">
-                        @csrf
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            {{-- Menggunakan card putih dengan shadow lembut --}}
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border border-gray-100">
+                <form action="{{ route('stories.store') }}" method="POST">
+                    @csrf
+                    <div class="p-8">
                         <div>
-                            <label for="content" class="block font-medium text-sm text-gray-700">Apa yang sedang kamu rasakan?</label>
-                            <textarea name="content" id="content" rows="10" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('content') }}</textarea>
+                            {{-- Label dipertegas dan diubah warnanya --}}
+                            <label for="content" class="block font-semibold text-base text-gray-900">Apa yang sedang kamu rasakan?</label>
+                            <p class="text-sm text-gray-600 mb-4">Tuangkan isi hatimu di sini. Kamu bisa memilih untuk mengirimnya secara anonim.</p>
+                            
+                            {{-- Textarea disesuaikan dengan tema --}}
+                            <textarea name="content" id="content" rows="10" 
+                                      class="mt-1 block w-full bg-slate-50 border-gray-300 rounded-lg shadow-sm focus:border-brand-pink focus:ring-brand-pink">{{ old('content') }}</textarea>
                             @error('content')
                                 <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <div class="mt-4">
+                        <div class="mt-6">
                             <label for="is_anonymous" class="inline-flex items-center">
-                                <input type="checkbox" name="is_anonymous" id="is_anonymous" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                <span class="ms-2 text-sm text-gray-600">Publikasikan sebagai Anonim</span>
+                                {{-- Checkbox disesuaikan dengan warna tema --}}
+                                <input type="checkbox" name="is_anonymous" id="is_anonymous" class="rounded border-gray-300 text-brand-pink shadow-sm focus:ring-brand-pink">
+                                <span class="ms-2 text-sm text-gray-700">{{ __('Publikasikan sebagai Anonim') }}</span>
                             </label>
                         </div>
+                    </div>
 
-                        <div class="flex items-center justify-end mt-4">
-                             <a href="{{ route('stories.index') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">Batal</a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Publikasikan
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    {{-- Tombol aksi dengan style baru --}}
+                    <div class="flex items-center justify-end gap-4 bg-gray-50 px-8 py-4 border-t border-gray-200">
+                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Batal</a>
+                        <button type="submit" class="px-6 py-2 brand-gradient text-white font-semibold rounded-full hover:opacity-90 transition-all transform hover:scale-105">
+                            Publikasikan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -1,178 +1,219 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#0f172a">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#E91E63">
 
-        <title>SafeTalk - Ruang Aman untuk Berbagi</title>
+    <title>SafeTalk - Perjalanan Menuju Ketenangan</title>
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    {{-- Font Kustom --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Definisi Font Kustom */
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Inter', sans-serif; }
 
-        <style>
-            @tailwind base;
-            @tailwind components;
-            @tailwind utilities;
+        /* PERBAIKAN: Mendefinisikan warna kustom agar bisa digunakan oleh Tailwind */
+        :root {
+            --brand-pink: #E91E63;
+            --brand-red: #F44336;
+            --brand-rose: #E91E63; /* Alias for pink */
+            --brand-coral: #FF5722;
+            --soft-gray: #f8fafc;
+            --warm-gray: #f1f5f9;
+        }
+        .text-brand-pink { color: var(--brand-pink); }
+        .text-brand-rose { color: var(--brand-rose); }
+        .text-brand-red { color: var(--brand-red); }
+        .text-brand-coral { color: var(--brand-coral); }
+        .bg-brand-pink\/10 { background-color: rgba(233, 30, 99, 0.1); }
+        .border-brand-pink\/20 { border-color: rgba(233, 30, 99, 0.2); }
+        /* ... dan seterusnya untuk warna lain jika diperlukan ... */
 
-            /* Efek "glow" yang elegan untuk ikon fitur */
-            .feature-icon {
-                @apply bg-cyan-400/10 text-cyan-400;
+
+        .elegant-bg {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%);
+        }
+
+        .floating-shapes::before, .floating-shapes::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.8;
+            filter: blur(50px);
+        }
+        .floating-shapes::before {
+            top: 10%;
+            right: 5%;
+            width: 250px;
+            height: 250px;
+            background: rgba(233, 30, 99, 0.08);
+        }
+        .floating-shapes::after {
+            bottom: 20%;
+            left: 3%;
+            width: 200px;
+            height: 200px;
+            background: rgba(236, 64, 122, 0.06);
+        }
+
+        .brand-gradient {
+            background: linear-gradient(135deg, #E91E63 0%, #F44336 100%);
+        }
+        
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 15px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .card-shadow:hover {
+            box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animasi */
+        .animate-fade-in-up {
+             animation: fadeInUp 1s ease-out forwards;
+             opacity: 0;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-        </style>
-    </head>
-    {{-- Latar belakang biru slate gelap yang profesional --}}
-    <body class="antialiased font-sans bg-slate-900">
-        <div class="text-slate-300">
-            <nav x-data="{ open: false }" class="bg-slate-900/60 backdrop-blur-sm border-b border-slate-700/50 fixed w-full z-20">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between h-16">
-                        <div class="flex">
-                            <div class="shrink-0 flex items-center">
-                                <a href="{{ url('/') }}">
-                                    <x-application-logo class="block h-12 w-auto fill-current text-slate-200" />
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased font-sans text-gray-800 elegant-bg">
+    <div class="relative overflow-x-hidden">
+        
+        {{-- Navbar --}}
+        <header x-data="{ open: false, navIsScrolled: false }" @scroll.window="navIsScrolled = (window.scrollY > 50) ? true : false" :class="{ 'shadow-sm': navIsScrolled }" class="fixed top-0 left-0 right-0 z-50 glass-effect transition-shadow duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-24">
+                    {{-- PENYEMPURNAAN: Logo SVG kustom + Teks dengan Font Serif --}}
+                    <a href="{{ url('/') }}" class="flex items-center gap-3" aria-label="SafeTalk Homepage">
+                        <svg class="h-10 w-auto" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                           <path d="M24 4C12.95 4 4 12.95 4 24C4 35.05 12.95 44 24 44C35.05 44 44 35.05 44 24C44 12.95 35.05 4 24 4ZM24 42C14.06 42 6 33.94 6 24C6 14.06 14.06 6 24 6C33.94 6 42 14.06 42 24C42 33.94 33.94 42 24 42Z" fill="#F43F5E"/>
+                           <path d="M24 18C21.24 18 19 20.24 19 23V25C19 27.76 21.24 30 24 30C26.76 30 29 27.76 29 25V23C29 20.24 26.76 18 24 18ZM24 28C22.34 28 21 26.66 21 25V23C21 21.34 22.34 20 24 20C25.66 20 27 21.34 27 23V25C27 26.66 25.66 28 24 28Z" fill="#E91E63"/>
+                        </svg>
+                        <span class="font-serif text-2xl font-bold text-gray-900">SafeTalk</span>
+                    </a>
+                    <div class="hidden sm:flex items-center space-x-8">
+                        @if (Route::has('login'))
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="text-gray-700 hover:text-brand-pink transition-colors duration-300 font-medium">Dashboard</a>
+                            @else
+                                <a href="{{ route('login') }}" class="text-gray-700 hover:text-brand-pink transition-colors duration-300 font-medium">Masuk</a>
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" role="button" class="px-6 py-3 brand-gradient text-white font-semibold rounded-full hover:opacity-90 transition-all duration-300 transform hover:scale-105 soft-shadow">
+                                        Daftar Sekarang
+                                    </a>
+                                @endif
+                            @endauth
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="floating-shapes">
+            {{-- Hero Section --}}
+            <section class="min-h-screen flex items-center pt-24 pb-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div class="grid md:grid-cols-2 gap-16 items-center">
+                        <div class="relative z-10 text-center md:text-left">
+                            <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight animate-fade-in-up" style="animation-delay: 0.2s;">
+                                Memulai Perjalanan Menuju <span style="color: var(--brand-pink);" class="text-brand-pink">Ketenangan</span>.
+                            </h1>
+                            <p class="mt-8 text-xl text-gray-600 max-w-2xl mx-auto md:mx-0 leading-relaxed animate-fade-in-up" style="animation-delay: 0.4s;">
+                                Di sini, setiap suara berharga. Temukan kekuatan dalam berbagi dan dukungan untuk bertumbuh bersama komunitas yang peduli.
+                            </p>
+                            <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-fade-in-up" style="animation-delay: 0.6s;">
+                                <a href="{{ route('register') }}" role="button" class="inline-flex items-center justify-center px-8 py-4 brand-gradient text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1">
+                                    <span>Temukan Ruang Anda</span>
+                                    <svg class="ml-2 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
                                 </a>
                             </div>
                         </div>
-
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
-                             @if (Route::has('login'))
-                                <div class="space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                     @auth
-                                        <a href="{{ url('/dashboard') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Dashboard</a>
-                                    @else
-                                        <a href="{{ route('login') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Log in</a>
-
-                                        @if (Route::has('register'))
-                                            <a href="{{ route('register') }}" class="font-semibold text-slate-300 hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-cyan-500">Register</a>
-                                        @endif
-                                    @endauth
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:bg-slate-700 focus:text-white transition duration-150 ease-in-out">
-                                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                                    <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                        
+                        <div class="relative h-96 md:h-[500px] flex items-center justify-center">
+                            <img src="https://i.pinimg.com/736x/2d/3e/b6/2d3eb6190478535d2f67fb5fcf27cb58.jpg" alt="Gadis tersenyum" class="w-3/5 max-w-[280px] h-auto rounded-3xl soft-shadow transform rotate-6 transition-all duration-500 hover:scale-105 hover:rotate-3 z-10">
+                             <img src="https://img.freepik.com/free-photo/indoor-shot-carefree-young-asian-woman-sits-crossed-legs-floor-keeps-arm-raised-holds-mobile-phone-listens-music-via-headphones-wears-shirt-black-trousers-isolated-red-background_273609-57647.jpg?w=740"  alt="Wanita tenang" class="w-3/5 max-w-[280px] h-auto rounded-3xl soft-shadow transform -rotate-3 transition-all duration-500 hover:scale-105 hover:-rotate-1 z-0 -ml-16 mt-16">
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-                    <div class="pt-2 pb-3 space-y-1">
-                        @auth
-                            <x-responsive-nav-link :href="route('dashboard')">
-                                {{ __('Dashboard') }}
-                            </x-responsive-nav-link>
-                        @else
-                             <x-responsive-nav-link :href="route('login')">
-                                {{ __('Log in') }}
-                            </x-responsive-nav-link>
-                            @if (Route::has('register'))
-                                <x-responsive-nav-link :href="route('register')">
-                                    {{ __('Register') }}
-                                </x-responsive-nav-link>
-                            @endif
-                        @endauth
+            {{-- PENYEMPURNAAN: Section Baru "Bagaimana Cara Kerjanya?" --}}
+            <section id="how-it-works" class="py-24 bg-white">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16">
+                         <h2 class="font-serif text-4xl font-bold text-gray-900">3 Langkah Mudah Memulai</h2>
+                         <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Kami merancang alur yang sederhana agar Anda bisa fokus pada hal terpenting: perjalanan Anda.</p>
                     </div>
-                </div>
-            </nav>
-
-
-            <main>
-                <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8" style="background-image: url('https://images.unsplash.com/photo-1626783658527-d7355850e35d?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); background-size: cover; background-position: center;">
-                    {{-- Overlay gelap untuk meningkatkan keterbacaan teks --}}
-                    <div class="absolute inset-0 bg-slate-900/70"></div>
-                    
-                    <div class="relative max-w-3xl mx-auto z-10">
-                        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight">
-                            Anda Tidak Sendirian.
-                        </h1>
-                        <p class="mt-6 text-lg text-slate-300 max-w-2xl mx-auto">
-                            SafeTalk adalah ruang aman untuk berbagi cerita, menemukan dukungan, dan mendapatkan pemahaman tentang kesehatan mental.
-                        </p>
-                        <div class="mt-8 flex justify-center gap-4 flex-wrap">
-                            {{-- Tombol Aksi Utama (CTA) dengan warna cyan yang cerah dan menarik --}}
-                            <a href="{{ route('register') }}" class="inline-block w-full sm:w-auto px-8 py-3 bg-cyan-500 text-white font-bold rounded-lg shadow-lg shadow-cyan-500/20 hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 ring-offset-slate-900 transition-all duration-200 ease-in-out transform hover:-translate-y-1">
-                                Mulai Bergabung
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="py-20 bg-slate-900">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="text-center">
-                            <h2 class="text-3xl font-bold text-white">Temukan Dukungan yang Anda Butuhkan</h2>
-                            <p class="mt-4 text-lg text-slate-400">Jelajahi fitur-fitur yang kami sediakan untuk perjalanan Anda.</p>
-                        </div>
-
-                        <div class="mt-20 grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-                            <div class="text-center">
-                                <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full feature-icon">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
-                                </div>
-                                <h3 class="mt-6 text-xl font-semibold text-white">Ruang Cerita</h3>
-                                <p class="mt-2 text-slate-400">Bagikan perasaan dan pengalaman Anda secara anonim di komunitas suportif.</p>
-                            </div>
-
-                            <div class="text-center">
-                                <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full feature-icon">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" /></svg>
-                                </div>
-                                <h3 class="mt-6 text-xl font-semibold text-white">Konsultasi AI</h3>
-                                <p class="mt-2 text-slate-400">Dapatkan dukungan emosional awal melalui chatbot AI kami, kapan saja.</p>
-                            </div>
-
-                            <div class="text-center">
-                                <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full feature-icon">
-                                   <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
-                                </div>
-                                <h3 class="mt-6 text-xl font-semibold text-white">Artikel Edukatif</h3>
-                                <p class="mt-2 text-slate-400">Tingkatkan pemahaman Anda melalui artikel yang ditulis oleh para ahli.</p>
-                            </div>
-
-                            <div class="text-center">
-                                <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full feature-icon">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
-                                </div>
-                                <h3 class="mt-6 text-xl font-semibold text-white">Chat Profesional</h3>
-                                <p class="mt-2 text-slate-400">Konsultasi langsung dengan psikolog terverifikasi via chat (premium).</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- Section CTA Psikolog dengan latar yang sedikit lebih terang untuk variasi --}}
-                <section class="py-20 bg-slate-800">
-                     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                         <h2 class="text-3xl font-bold text-white">Apakah Anda Seorang Psikolog?</h2>
-                         <p class="mt-4 text-lg text-slate-300">Bergabunglah untuk memberikan dampak positif dan menjangkau mereka yang membutuhkan uluran tangan profesional Anda.</p>
-                         <div class="mt-8">
-                            {{-- Tombol sekunder dengan gaya "outline" yang elegan --}}
-                            <a href="{{ route('psychologist.register') }}" class="inline-block px-8 py-3 bg-transparent border-2 border-slate-600 text-slate-300 font-semibold rounded-lg hover:bg-slate-700 hover:text-white transition-colors duration-200">
-                                Daftar sebagai Psikolog
-                            </a>
+                    <div class="grid md:grid-cols-3 gap-8 md:gap-12 relative">
+                         {{-- Garis Penghubung --}}
+                         <div class="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gray-200" style="transform: translateY(-50%);"></div>
+                         
+                         <div class="relative text-center">
+                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">1</div>
+                              <h3 class="text-xl font-bold text-gray-900 mb-2">Daftar & Buat Akun</h3>
+                              <p class="text-gray-600">Buat akun aman Anda dalam beberapa menit untuk memulai.</p>
                          </div>
-                     </div>
-                </section>
-            </main>
-
-            {{-- Footer yang bersih dan minimalis --}}
-            <footer class="bg-slate-900 border-t border-slate-800">
-                <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <div class="text-center">
-                        <p class="text-base text-slate-400">&copy; {{ date('Y') }} SafeTalk. All rights reserved.</p>
-                        <p class="mt-2 text-sm text-slate-500">Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})</p>
+                         <div class="relative text-center">
+                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">2</div>
+                              <h3 class="text-xl font-bold text-gray-900 mb-2">Bagikan Cerita Anda</h3>
+                              <p class="text-gray-600">Tulis dan bagikan pengalaman Anda secara anonim di Ruang Cerita.</p>
+                         </div>
+                         <div class="relative text-center">
+                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">3</div>
+                              <h3 class="text-xl font-bold text-gray-900 mb-2">Terhubung dengan Ahli</h3>
+                              <p class="text-gray-600">Jadwalkan sesi konsultasi personal dengan psikolog terverifikasi kami.</p>
+                         </div>
                     </div>
                 </div>
-            </footer>
-        </div>
-    </body>
+            </section>
+
+            {{-- CTA Section --}}
+            <section class="py-24" style="background: var(--soft-gray);">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="font-serif text-4xl font-bold text-gray-900 mb-6">Siap Mengambil Langkah Pertama?</h2>
+                    <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">Bergabunglah dengan ribuan orang yang telah menemukan kedamaian dan pertumbuhan bersama SafeTalk.</p>
+                    <a href="{{ route('register') }}" role="button" class="inline-flex items-center justify-center px-10 py-4 brand-gradient text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1">
+                        <span>Mulai Sekarang, Gratis</span>
+                    </a>
+                </div>
+            </section>
+            
+            {{-- PENYEMPURNAAN: Footer Baru yang Lebih Profesional --}}
+      <footer class="bg-white border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <p class="text-center text-sm text-gray-500">
+            &copy; {{ date('Y') }} SafeTalk. All Rights Reserved.
+        </p>
+    </div>
+</footer>
+        </main>
+    </div>
+</body>
 </html>

@@ -1,4 +1,5 @@
-@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-slate-800 border border-slate-700'])
+{{-- resources/views/components/dropdown.blade.php (Versi Elegan Baru) --}}
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white border border-gray-100 rounded-md shadow-lg'])
 
 @php
 switch ($align) {
@@ -20,6 +21,7 @@ switch ($width) {
         break;
 }
 @endphp
+
 <div class="relative" x-data="{ open: false }" @click.outside="open = false" @close.stop="open = false">
     <div @click="open = ! open">
         {{ $trigger }}
@@ -35,7 +37,7 @@ switch ($width) {
             class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }}"
             style="display: none;"
             @click="open = false">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 {{ $contentClasses }}">
+        <div class="{{ $contentClasses }}">
             {{ $content }}
         </div>
     </div>

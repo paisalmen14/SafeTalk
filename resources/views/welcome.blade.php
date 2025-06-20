@@ -33,7 +33,9 @@
         .text-brand-red { color: var(--brand-red); }
         .text-brand-coral { color: var(--brand-coral); }
         .bg-brand-pink\/10 { background-color: rgba(233, 30, 99, 0.1); }
+        .border-brand-pink { border-color: var(--brand-pink); }
         .border-brand-pink\/20 { border-color: rgba(233, 30, 99, 0.2); }
+        .hover\:bg-pink-50:hover { background-color: #fdf2f8; }
         /* ... dan seterusnya untuk warna lain jika diperlukan ... */
 
 
@@ -123,10 +125,10 @@
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="text-gray-700 hover:text-brand-pink transition-colors duration-300 font-medium">Dashboard</a>
                             @else
-                                <a href="{{ route('login') }}" class="text-gray-700 hover:text-brand-pink transition-colors duration-300 font-medium">Masuk</a>
+                                <a href="{{ route('login') }}" class="text-gray-700 hover:text-brand-pink transition-colors duration-300 font-medium">Login</a>
                                 @if (Route::has('register'))
                                     <a href="{{ route('register') }}" role="button" class="px-6 py-3 brand-gradient text-white font-semibold rounded-full hover:opacity-90 transition-all duration-300 transform hover:scale-105 soft-shadow">
-                                        Daftar Sekarang
+                                        Register
                                     </a>
                                 @endif
                             @endauth
@@ -164,55 +166,105 @@
                 </div>
             </section>
 
-            {{-- PENYEMPURNAAN: Section Baru "Bagaimana Cara Kerjanya?" --}}
-            <section id="how-it-works" class="py-24 bg-white">
+            <!-- Features Section -->
+            <section class="py-24 bg-white">
                 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-16">
-                         <h2 class="font-serif text-4xl font-bold text-gray-900">3 Langkah Mudah Memulai</h2>
-                         <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Kami merancang alur yang sederhana agar Anda bisa fokus pada hal terpenting: perjalanan Anda.</p>
+                    <div class="text-center mb-20">
+                        <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6">Mengapa Memilih SafeTalk?</h2>
+                        <p class="text-xl text-gray-600 max-w-3xl mx-auto">Platform yang dirancang khusus untuk mendukung perjalanan kesehatan mental Anda dengan pendekatan yang aman, profesional, dan penuh empati.</p>
                     </div>
-                    <div class="grid md:grid-cols-3 gap-8 md:gap-12 relative">
-                         {{-- Garis Penghubung --}}
-                         <div class="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gray-200" style="transform: translateY(-50%);"></div>
+                    
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="feature-card rounded-3xl p-8 text-center card-shadow"> {{-- Added card-shadow here --}}
+                            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl brand-gradient-subtle flex items-center justify-center">
+                                <svg class="w-10 h-10 text-brand-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">100% Anonim & Aman</h3>
+                            <p class="text-gray-600 leading-relaxed">Privasi Anda adalah prioritas utama. Bagikan cerita tanpa khawatir identitas terungkap dengan sistem keamanan berlapis.</p>
+                        </div>
+                        
+                        <div class="feature-card rounded-3xl p-8 text-center card-shadow"> {{-- Added card-shadow here --}}
+                            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl brand-gradient-subtle flex items-center justify-center">
+                                <svg class="w-10 h-10 text-brand-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">Komunitas Suportif</h3>
+                            <p class="text-gray-600 leading-relaxed">Terhubung dengan orang-orang yang memahami perjalanan Anda. Saling mendukung dalam ruang yang aman dan penuh empati.</p>
+                        </div>
+                        
+                        <div class="feature-card rounded-3xl p-8 text-center card-shadow"> {{-- Added card-shadow here --}}
+                            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl brand-gradient-subtle flex items-center justify-center">
+                                <svg class="w-10 h-10 text-brand-pink" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">Psikolog Terverifikasi</h3>
+                            <p class="text-gray-600 leading-relaxed">Dapatkan konsultasi profesional dari psikolog berlisensi yang telah melalui proses verifikasi ketat untuk kualitas terbaik.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {{-- PENYEMPURNAAN: Section Baru "Bagaimana Cara Kerjanya?" --}}
+           <!-- How It Works Section - Enhanced -->
+            <section class="py-24 bg-gradient-to-br from-gray-50 to-white">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-20">
+                         <h2 class="font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-6">3 Langkah Mudah Memulai</h2>
+                         <p class="text-xl text-gray-600 max-w-3xl mx-auto">Kami merancang alur yang sederhana agar Anda bisa fokus pada hal terpenting: perjalanan Anda menuju kesehatan mental yang lebih baik.</p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-8 relative">
+                         <!-- Connection Lines -->
+                         <div class="hidden md:block absolute top-24 left-0 w-full h-0.5 bg-gradient-to-r from-brand-pink to-brand-red opacity-20"></div>
                          
-                         <div class="relative text-center">
-                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">1</div>
-                              <h3 class="text-xl font-bold text-gray-900 mb-2">Daftar & Buat Akun</h3>
-                              <p class="text-gray-600">Buat akun aman Anda dalam beberapa menit untuk memulai.</p>
+                         <div class="step-card rounded-3xl p-8 text-center soft-shadow">
+                              <div class="w-24 h-24 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-3xl font-serif soft-shadow mb-6 animate-pulse-slow">1</div>
+                              <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">Daftar & Buat Akun</h3>
+                              <p class="text-gray-600 leading-relaxed">Buat akun aman Anda dalam beberapa menit. Proses registrasi yang sederhana dengan keamanan tingkat tinggi.</p>
                          </div>
-                         <div class="relative text-center">
-                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">2</div>
-                              <h3 class="text-xl font-bold text-gray-900 mb-2">Bagikan Cerita Anda</h3>
-                              <p class="text-gray-600">Tulis dan bagikan pengalaman Anda secara anonim di Ruang Cerita.</p>
+                         
+                         <div class="step-card rounded-3xl p-8 text-center soft-shadow" style="animation-delay: 0.2s;">
+                              <div class="w-24 h-24 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-3xl font-serif soft-shadow mb-6 animate-pulse-slow">2</div>
+                              <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">Bagikan Cerita Anda</h3>
+                              <p class="text-gray-600 leading-relaxed">Tulis dan bagikan pengalaman Anda secara anonim di Ruang Cerita. Dapatkan dukungan dari komunitas yang peduli.</p>
                          </div>
-                         <div class="relative text-center">
-                              <div class="w-20 h-20 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-2xl font-serif soft-shadow mb-4">3</div>
-                              <h3 class="text-xl font-bold text-gray-900 mb-2">Terhubung dengan Ahli</h3>
-                              <p class="text-gray-600">Jadwalkan sesi konsultasi personal dengan psikolog terverifikasi kami.</p>
+                         
+                         <div class="step-card rounded-3xl p-8 text-center soft-shadow" style="animation-delay: 0.4s;">
+                              <div class="w-24 h-24 mx-auto flex items-center justify-center rounded-full brand-gradient text-white font-bold text-3xl font-serif soft-shadow mb-6 animate-pulse-slow">3</div>
+                              <h3 class="text-2xl font-bold text-gray-900 mb-4 font-serif">Terhubung dengan Ahli</h3>
+                              <p class="text-gray-600 leading-relaxed">Jadwalkan sesi konsultasi personal dengan psikolog terverifikasi kami. Dapatkan bantuan profesional yang Anda butuhkan.</p>
                          </div>
                     </div>
                 </div>
             </section>
 
-            {{-- CTA Section --}}
-            <section class="py-24" style="background: var(--soft-gray);">
+            {{-- ========================================================= --}}
+            {{-- == KODE BARU UNTUK PENDAFTARAN PSIKOLOG DITAMBAHKAN DI SINI == --}}
+            {{-- ========================================================= --}}
+            <section class="py-24" style="background: var(--warm-gray);">
                 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="font-serif text-4xl font-bold text-gray-900 mb-6">Siap Mengambil Langkah Pertama?</h2>
-                    <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">Bergabunglah dengan ribuan orang yang telah menemukan kedamaian dan pertumbuhan bersama SafeTalk.</p>
-                    <a href="{{ route('register') }}" role="button" class="inline-flex items-center justify-center px-10 py-4 brand-gradient text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1">
-                        <span>Mulai Sekarang, Gratis</span>
+                    <h2 class="font-serif text-4xl font-bold text-gray-900 mb-6">Apakah Anda Seorang Psikolog?</h2>
+                    <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                        Bergabunglah dengan platform kami untuk menjangkau lebih banyak klien dan membantu mereka yang membutuhkan.
+                    </p>
+                    <a href="{{ route('psychologist.register') }}" role="button" class="inline-flex items-center justify-center px-10 py-4 brand-gradient text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1">
+                        <span>Daftar Sebagai Psikolog</span>
                     </a>
                 </div>
             </section>
             
             {{-- PENYEMPURNAAN: Footer Baru yang Lebih Profesional --}}
-      <footer class="bg-white border-t border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <p class="text-center text-sm text-gray-500">
-            &copy; {{ date('Y') }} SafeTalk. All Rights Reserved.
-        </p>
-    </div>
-</footer>
+            <footer class="bg-white border-t border-gray-100">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <p class="text-center text-sm text-gray-500">
+                        &copy; {{ date('Y') }} SafeTalk. All Rights Reserved.
+                    </p>
+                </div>
+            </footer>
         </main>
     </div>
 </body>

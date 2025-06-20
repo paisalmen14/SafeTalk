@@ -11,28 +11,27 @@
         </div>
 
         <div>
-            {{-- PERBAIKAN: Label dibuat lebih tebal dan jelas --}}
-            <x-input-label for="email" :value="__('Email')" class="text-base font-bold text-black" />
+            <x-input-label for="email" value="Email" class="font-semibold text-gray-700" />
             
             <x-text-input 
                 id="email" 
-                class="block mt-1 w-full bg-slate-50 border-gray-300 focus:border-brand-pink focus:ring-brand-pink text-black" 
+                class="block mt-1 w-full bg-white border-gray-300 focus:border-brand-pink focus:ring-brand-pink text-gray-900" 
                 type="email" 
                 name="email" 
                 :value="old('email')" 
                 required 
-                autofocus />
+                autofocus 
+                autocomplete="username" />
                 
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <div class="mt-6">
-            {{-- PERBAIKAN: Label dibuat lebih tebal dan jelas --}}
-            <x-input-label for="password" :value="__('Password')" class="text-base font-bold text-black"/>
+            <x-input-label for="password" value="Password" class="font-semibold text-gray-700"/>
 
             <x-text-input 
                 id="password" 
-                class="block mt-1 w-full bg-slate-50 border-gray-300 focus:border-brand-pink focus:ring-brand-pink text-black" 
+                class="block mt-1 w-full bg-white border-gray-300 focus:border-brand-pink focus:ring-brand-pink text-gray-900" 
                 type="password" 
                 name="password" 
                 required 

@@ -61,21 +61,19 @@ Route::middleware('auth')->group(function () {
     // Route::get('/membership', [MembershipController::class, 'index'])->name('membership.index');
     // Route::post('/membership', [MembershipController::class, 'store'])->name('membership.store');
     
- Route::get('/chat', [App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat', [App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/consultation/{consultation}', [App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/consultation/{consultation}', [App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
 
     
       // --- Rute untuk Psikolog ---
     Route::middleware(['role:psikolog'])->prefix('psychologist')->name('psychologist.')->group(function () {
-        // Mengelola harga dan profil lainnya
-        // Rute untuk pengaturan harga
-    Route::get('/price-settings', [App\Http\Controllers\Psychologist\PriceController::class, 'edit'])->name('price.edit');
-    Route::put('/price-settings', [App\Http\Controllers\Psychologist\PriceController::class, 'update'])->name('price.update');
-
-    // Rute BARU untuk foto profil
-    Route::get('/profile-picture', [App\Http\Controllers\Psychologist\ProfilePictureController::class, 'edit'])->name('profile_picture.edit');
-    Route::post('/profile-picture', [App\Http\Controllers\Psychologist\ProfilePictureController::class, 'update'])->name('profile_picture.update');
+        
+        // --- AWAL BAGIAN YANG DIPERBAIKI ---
+        // Rute untuk mengelola profil, harga, dan foto profil digabung ke sini
+        Route::get('/profile', [App\Http\Controllers\Psychologist\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [App\Http\Controllers\Psychologist\ProfileController::class, 'update'])->name('profile.update');
+        // --- AKHIR BAGIAN YANG DIPERBAIKI ---
 
         // Mengelola jadwal ketersediaan
         Route::get('/availability', [App\Http\Controllers\Psychologist\AvailabilityController::class, 'index'])->name('availability.index');

@@ -10,7 +10,9 @@ use Carbon\Carbon;
 
 class ConsultationController extends Controller
 {
-    // Menampilkan daftar psikolog yang tersedia
+    /**
+     * Menampilkan daftar psikolog yang tersedia.
+     */
     public function index()
     {
         $psychologists = User::where('role', 'psikolog')
@@ -20,7 +22,9 @@ class ConsultationController extends Controller
         return view('consultations.index', compact('psychologists'));
     }
 
-    // Menampilkan detail satu psikolog dan jadwalnya
+    /**
+     * Menampilkan detail satu psikolog dan jadwalnya.
+     */
     public function show(User $psychologist)
     {
         $psychologist->load('psychologistProfile', 'availabilities');
@@ -32,13 +36,15 @@ class ConsultationController extends Controller
         return view('consultations.show', compact('psychologist', 'availableSlots'));
     }
 
-    // Proses membuat reservasi
+    /**
+     * Proses membuat reservasi.
+     */
     public function store(Request $request)
     {
         $request->validate([
             'psychologist_id' => 'required|exists:users,id',
             'requested_start_time' => 'required|date',
-            'duration_minutes' => 'required|integer|in:30,60,90', // Contoh durasi
+            'duration_minutes' => 'required|integer|in:30,60,90',
         ]);
 
         $psychologist = User::with('psychologistProfile')->find($request->psychologist_id);
@@ -67,21 +73,31 @@ class ConsultationController extends Controller
         return redirect()->route('consultations.payment.create', $consultation);
     }
 
-    // Menampilkan riwayat konsultasi user
-   public function history()
+    /**
+     * Menampilkan riwayat konsultasi user.
+     * VERSI PERBAIKAN: Kode ini memastikan $consultations selalu berupa Paginator.
+     */
+    public function history()
     {
         $user = auth()->user();
-        $consultations = collect();
+        
+        // Mulai dengan Query Builder dasar
+        $query = Consultation::query();
 
         if ($user->role === 'pengguna') {
-            // Ambil riwayat untuk pasien
-            // PERBAIKAN DI SINI: Gunakan relasi consultationsAsUser()
-            $consultations = $user->consultationsAsUser()->with('psychologist')->latest()->paginate(10);
+            // Muat riwayat sebagai pasien
+            $query = $user->consultationsAsUser()->with('psychologist');
         } elseif ($user->role === 'psikolog') {
-            // Ambil riwayat untuk psikolog
-            // PERBAIKAN DI SINI: Gunakan relasi consultationsAsPsychologist()
-            $consultations = $user->consultationsAsPsychologist()->with('user')->latest()->paginate(10);
+            // Muat riwayat sebagai psikolog
+            $query = $user->consultationsAsPsychologist()->with('user');
+        } else {
+            // Untuk Admin atau peran lain, buat query yang hasilnya pasti kosong
+            // tapi tetap bisa dipaginasi untuk menghindari error.
+            $query->whereRaw('1 = 0');
         }
+
+        // Selalu panggil paginate di akhir pada query builder
+        $consultations = $query->latest()->paginate(10);
 
         return view('consultations.history', compact('consultations'));
     }
